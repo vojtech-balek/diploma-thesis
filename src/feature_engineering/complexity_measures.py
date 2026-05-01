@@ -30,18 +30,54 @@ def get_modalities(df, col='question'):
     df[col + '_item_form'] = df[col].apply(extract_types)
     return df
 
+def get_item_metrics(df, dataset_name):
+    import os
+    logs_df = pd.DataFrame()
+    base_path = f'../../data/raw/logs/{dataset_name}'
+    
+    for dirpath, dirnames, files in os.walk(base_path):
+        for file in files:
+            temp_df = pd.read_csv(os.path.join(dirpath, file), encoding='utf-8')
+            logs_df = pd.concat([logs_df, temp_df], axis=0)
+
+    if logs_df.empty or 'item' not in logs_df.columns:
+        metrics_df = pd.DataFrame(columns=['item', 'median_response_time', 'error_rate', 'number_of_occurrences'])
+    else:
+        response_time = pd.to_numeric(logs_df.get('responseTime'), errors='coerce')
+        correct_numeric = pd.to_numeric(logs_df.get('correct'), errors='coerce')
+
+        metrics_df = (
+            logs_df.assign(responseTime_num=response_time, correct_num=correct_numeric)
+            .groupby('item', dropna=False)
+            .agg(
+                median_response_time=('responseTime_num', 'median'),
+                correct_rate=('correct_num', 'mean'),
+                number_of_occurrences=('correct_num', 'size'),
+            )
+            .reset_index()
+        )
+        metrics_df['error_rate'] = 1 - metrics_df['correct_rate']
+        metrics_df = metrics_df.drop(columns=['correct_rate'])
+    
+    df = df.merge(metrics_df, how='left', left_on='id_x', right_on='item')
+    return df
+
 def process_math():
     math_df = pd.read_csv('../../data/processed/math.csv', delimiter=';')
     math_df = get_length(math_df, ['question_decoded', 'correct_decoded'])
     math_df = get_modalities(math_df, col='question')
+    math_df = get_item_metrics(math_df, 'math')
 
-    pass
+    math_df.to_csv('../../data/feature_engineering/complexity_measures/math.csv', encoding='utf-8', sep=';', index=False)
+
 
 def process_inf():
     inf_df = pd.read_csv('../../data/processed/informatics.csv', delimiter=';')
     inf_df = get_length(inf_df, ['question_decoded', 'correct_decoded'])
     inf_df = get_modalities(inf_df, col='question')
-    pass
+    inf_df = get_item_metrics(inf_df, 'informatics')
+
+    inf_df.to_csv('../../data/feature_engineering/complexity_measures/informatics.csv', encoding='utf-8', sep=';', index=False)
 
 def process_cs():
     pass

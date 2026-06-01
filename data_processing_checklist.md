@@ -8,7 +8,7 @@ These properties are based only on the content data and can be computed before t
 - [ ] **Complexity Measures**
   - [x] Text length
   - [ ] Text complexity (readability formulae, etc.)
-  - [ ] Domain-specific complexity (e.g., code complexity: number of lines, nesting depth, cyclomatic complexity)
+  - [x] Domain-specific complexity (e.g., code complexity: number of lines, nesting depth, cyclomatic complexity)
 - [x] **Item Form**
   - [x] Identify modalities of the stem and options (text, image, audio, code, math expressions, true/false, etc.)
 - [ ] **Item Type**
@@ -24,8 +24,8 @@ These properties are based only on the content data and can be computed before t
 These properties are based on observed data about student performance across different items.
 
 - [x] **Difficulty Measures**
-  - [ ] Error rate (proportion of students that made a mistake)
-  - [ ] Median response time
+  - [X] Error rate (proportion of students that made a mistake)
+  - [X] Median response time
 - [ ] **Item Discrimination**
   - [ ] Upper-lower discrimination index (difference in error rates between lower third and upper third of students)
   - [ ] Point-biserial index (correlation coefficient between overall error rate and the item answer)
